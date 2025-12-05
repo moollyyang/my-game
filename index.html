@@ -102,9 +102,12 @@
             </div>
         </main>
 
-        <button id="resetButton" class="hidden bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg text-lg transition-all duration-300">
-            <i class="fa fa-refresh mr-2"></i> 再來一次
-        </button>
+        <!-- 修改：將 resetButton 移到 main 外部並添加 flex 和 justify-center 使其置中 -->
+        <div class="flex justify-center mb-6">
+            <button id="resetButton" class="hidden bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg text-lg transition-all duration-300">
+                <i class="fa fa-refresh mr-2"></i> 再來一次
+            </button>
+        </div>
     </div>
 
     <footer class="text-center text-gray-500 py-4">
@@ -155,9 +158,9 @@
             updateRemainingCount();
             addToDrawnPrizesList(selectedPrize);
 
-            resetButton.classList.remove('hidden');
-
+            // 修改：只有在所有獎項抽完時才顯示 resetButton
             if (remainingPrizes.length === 0) {
+                resetButton.classList.remove('hidden');
                 drawButton.disabled = true;
                 drawButton.classList.add('bg-gray-400', 'cursor-not-allowed');
                 drawButton.classList.remove('bg-primary', 'hover:bg-primary/90', 'btn-bounce');
@@ -195,10 +198,26 @@
         }
 
         function resetDraw() {
+            // 重置所有變數
+            remainingPrizes = [...prizes];
+            drawnPrizes = [];
+            
+            // 清空已抽出的獎項列表
+            drawnPrizesList.innerHTML = '';
+            
+            // 重置顯示狀態
             initialMessage.classList.remove('hidden');
             prizeResult.classList.add('hidden');
             noMorePrizes.classList.add('hidden');
             resetButton.classList.add('hidden');
+            
+            // 啟用抽獎按鈕
+            drawButton.disabled = false;
+            drawButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            drawButton.classList.add('bg-primary', 'hover:bg-primary/90', 'btn-bounce');
+            
+            // 更新剩餘次數
+            updateRemainingCount();
         }
 
         drawButton.addEventListener('click', drawPrize);
