@@ -98,11 +98,12 @@
 
             <div class="w-full">
                 <h3 class="text-center text-dark font-bold mb-4 text-lg">已抽出獎項</h3>
+                <!-- 修改：改成 4x2 網格布局 -->
                 <div id="drawnPrizesList" class="grid grid-cols-4 gap-4"></div>
             </div>
         </main>
 
-        <!-- ⭐ 置中版本 再來一次按鈕（預設隱藏） -->
+        <!-- 置中版本 再來一次按鈕（預設隱藏） -->
         <div class="w-full flex justify-center mt-4">
             <button id="resetButton" class="hidden bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg text-lg transition-all duration-300">
                 <i class="fa fa-refresh mr-2"></i> 再來一次
@@ -115,33 +116,31 @@
     </footer>
 
     <script>
+        // 獎項配置：提高自肥獎機率，至尊無敵獎壓軸
         const prizes = [
-        // 最後一抽才會被抽出的獎（壓軸）
-        { name: '至尊無敵獎', emoji: '👍', isFinal: true },
+            // 自肥獎提高機率（多放幾份）
+            { name: '自肥獎', emoji: '😌' },
+            { name: '自肥獎', emoji: '😌' },
+            { name: '自肥獎', emoji: '😌' },
+            { name: '自肥獎', emoji: '😌' },
+            { name: '自肥獎', emoji: '😌' },
+            
+            // 其他獎項
+            { name: '宇宙霹靂獎', emoji: '✌️' },
+            { name: '超級好獎', emoji: '👌' },
+            { name: '我覺得還不錯獎', emoji: '🖖' },
+            { name: '最佳人氣獎', emoji: '🫶' },
+            
+            // 壓軸獎（最後一抽才會被抽出）
+            { name: '至尊無敵獎', emoji: '👍', isFinal: true }
+        ];
 
-        // 其他獎項（抽前 7 次從這裡拿）
-        { name: '宇宙霹靂獎', emoji: '✌️' },
-        { name: '超級好獎', emoji: '👌' },
-        { name: '我覺得還不錯獎', emoji: '🖖' },
-        { name: '最佳人氣獎', emoji: '🫶' },
-
-        // ⭐ 自肥獎提高機率（多放幾份）
-        { name: '自肥獎', emoji: '😌' },
-        { name: '自肥獎', emoji: '😌' },
-        { name: '自肥獎', emoji: '😌' },
-        { name: '自肥獎', emoji: '😌' }, // 多增加
-        { name: '自肥獎', emoji: '😌' }  // 多增加
-    ];
-
-    // 分離壓軸獎
-    const finalPrize = prizes.find(p => p.isFinal);
-    let normalPrizes = prizes.filter(p => !p.isFinal);
-
-    // 取前 7 抽（不含壓軸）
-    let remainingPrizes = [...normalPrizes];
-    let drawnPrizes = [];
-
-        let remainingPrizes = [...prizes];
+        // 分離壓軸獎
+        const finalPrize = prizes.find(p => p.isFinal);
+        let normalPrizes = prizes.filter(p => !p.isFinal);
+        
+        // 前7抽從普通獎項中抽取
+        let remainingPrizes = [...normalPrizes];
         let drawnPrizes = [];
 
         const drawButton = document.getElementById('drawButton');
@@ -156,62 +155,45 @@
 
         // 更新剩餘次數
         function updateRemainingCount() {
-            remainingCount.textContent = `剩餘抽獎次數：${remainingPrizes.length}`;
+            const totalRemaining = remainingPrizes.length + (drawnPrizes.includes(finalPrize) ? 0 : 1);
+            remainingCount.textContent = `剩餘抽獎次數：${totalRemaining}`;
         }
 
-        // 抽獎
-        // ⭐ 新抽獎：前 7 抽從 normalPrizes 抽，最後一抽固定抽「至尊無敵獎」
-function drawPrize() {
+        // 抽獎邏輯：前7抽從normalPrizes抽，最後一抽固定抽「至尊無敵獎」
+        function drawPrize() {
+            // 前7抽
+            if (remainingPrizes.length > 0) {
+                const randomIndex = Math.floor(Math.random() * remainingPrizes.length);
+                const selectedPrize = remainingPrizes[randomIndex];
 
-    // 前 7 抽
-    if (remainingPrizes.length > 0) {
-        const randomIndex = Math.floor(Math.random() * remainingPrizes.length);
-        const selectedPrize = remainingPrizes[randomIndex];
+                remainingPrizes.splice(randomIndex, 1);
+                drawnPrizes.push(selectedPrize);
 
-        remainingPrizes.splice(randomIndex, 1);
-        drawnPrizes.push(selectedPrize);
+                showPrizeResult(selectedPrize);
+                updateRemainingCount();
+                addToDrawnPrizesList(selectedPrize);
 
-        showPrizeResult(selectedPrize);
-        updateRemainingCount();
-        addToDrawnPrizesList(selectedPrize);
+                // 如果普通獎項抽完，準備抽壓軸獎
+                if (remainingPrizes.length === 0) {
+                    remainingCount.textContent = "剩餘抽獎次數：1";
+                }
+                return;
+            }
 
-        return;
-    }
+            // 最後一抽：抽壓軸「至尊無敵獎」
+            if (!drawButton.disabled) {
+                showPrizeResult(finalPrize);
+                addToDrawnPrizesList(finalPrize);
+                drawnPrizes.push(finalPrize);
 
-    // ⭐ 最後一抽：抽壓軸「至尊無敵獎」
-    if (!drawButton.disabled) {
-        showPrizeResult(finalPrize);
-        addToDrawnPrizesList(finalPrize);
-        drawnPrizes.push(finalPrize);
+                remainingCount.textContent = "剩餘抽獎次數：0";
 
-        remainingCount.textContent = "剩餘抽獎次數：0";
-
-        drawButton.disabled = true;
-        drawButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-        drawButton.classList.remove('bg-primary', 'hover:bg-primary/90', 'btn-bounce');
-
-        resetButton.classList.remove('hidden');
-
-        return;
-    }
-}
-
-            const randomIndex = Math.floor(Math.random() * remainingPrizes.length);
-            const selectedPrize = remainingPrizes[randomIndex];
-            remainingPrizes.splice(randomIndex, 1);
-            drawnPrizes.push(selectedPrize);
-
-            showPrizeResult(selectedPrize);
-            updateRemainingCount();
-            addToDrawnPrizesList(selectedPrize);
-
-            // ⭐ 抽完才出現再來一次按鈕
-            if (remainingPrizes.length === 0) {
                 drawButton.disabled = true;
                 drawButton.classList.add('bg-gray-400', 'cursor-not-allowed');
                 drawButton.classList.remove('bg-primary', 'hover:bg-primary/90', 'btn-bounce');
 
                 resetButton.classList.remove('hidden');
+                return;
             }
         }
 
@@ -228,14 +210,7 @@ function drawPrize() {
             setTimeout(() => prizeResult.classList.remove('animate-bounce'), 1000);
         }
 
-        // 抽完全部獎品後
-        function showNoMorePrizes() {
-            initialMessage.classList.add('hidden');
-            prizeResult.classList.add('hidden');
-            noMorePrizes.classList.remove('hidden');
-        }
-
-        // 已抽出的卡片
+        // 已抽出的卡片（4x2布局）
         function addToDrawnPrizesList(prize) {
             const card = document.createElement('div');
             card.className = 'prize-card bg-white rounded-xl shadow-md p-4 text-center';
@@ -246,21 +221,28 @@ function drawPrize() {
             drawnPrizesList.appendChild(card);
         }
 
-        // ⭐ 再來一次：完整重置
+        // 再來一次：完整重置
         function resetDraw() {
-            remainingPrizes = [...prizes];
+            // 重置獎項
+            remainingPrizes = [...normalPrizes];
             drawnPrizes = [];
+            
+            // 清空已抽出的獎項列表
             drawnPrizesList.innerHTML = '';
-            updateRemainingCount();
-
+            
+            // 重置顯示狀態
             initialMessage.classList.remove('hidden');
             prizeResult.classList.add('hidden');
             noMorePrizes.classList.add('hidden');
             resetButton.classList.add('hidden');
-
+            
+            // 啟用抽獎按鈕
             drawButton.disabled = false;
             drawButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
             drawButton.classList.add('bg-primary', 'hover:bg-primary/90', 'btn-bounce');
+            
+            // 更新剩餘次數
+            updateRemainingCount();
         }
 
         drawButton.addEventListener('click', drawPrize);
