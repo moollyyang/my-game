@@ -4,37 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新鮮現炸豬排油獎小遊戲 😃</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    
+
+    <!-- Google Fonts：Noto Sans TC 圓體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
     <!-- 自定義 Tailwind 配置 -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        // 柔和可愛配色方案
-                        primary: '#FF9EBB', // 粉嫩粉紅
-                        secondary: '#A8D8EA', // 淺藍色
-                        accent: '#FFD6A5', // 淺橘色
-                        light: '#FFF9E8', // 米白色
-                        dark: '#6B5CA5', // 淺紫色
+                        primary: '#FF9EBB',
+                        secondary: '#A8D8EA',
+                        accent: '#FFD6A5',
+                        light: '#FFF9E8',
+                        dark: '#6B5CA5',
                     },
                     fontFamily: {
-                        cute: ['Comic Sans MS', 'Bubblegum Sans', 'sans-serif'],
+                        rounded: ['"Noto Sans TC"', 'sans-serif'], 
                     },
                 }
             }
         }
     </script>
-    
+
     <style type="text/tailwindcss">
         @layer utilities {
             .text-shadow {
                 text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            .bg-gradient-cute {
-                background: linear-gradient(135deg, #FF9EBB 0%, #A8D8EA 100%);
             }
             .prize-card {
                 transition: all 0.5s ease;
@@ -47,19 +50,18 @@
                 animation: bounce 2s infinite;
             }
             @keyframes bounce {
-                0%, 100% {
-                    transform: translateY(0);
-                }
-                50% {
-                    transform: translateY(-8px);
-                }
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-8px); }
             }
         }
     </style>
 </head>
-<body class="bg-light min-h-screen font-cute overflow-x-hidden">
+
+<body class="bg-light min-h-screen font-rounded overflow-x-hidden">
+
     <!-- 頁面容器 -->
     <div class="container mx-auto px-4 py-8 max-w-4xl">
+
         <!-- 標題區域 -->
         <header class="text-center mb-8">
             <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark text-shadow mb-2">
@@ -73,49 +75,43 @@
 
         <!-- 抽獎區域 -->
         <main class="flex flex-col items-center justify-center mb-10">
-            <!-- 抽獎按鈕 -->
             <button id="drawButton" class="bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-full shadow-lg mb-8 text-xl transition-all duration-300 btn-bounce">
                 <i class="fa fa-gift mr-2"></i> 開始抽獎 🎉
             </button>
 
-            <!-- 抽獎結果顯示區 -->
             <div id="prizeDisplay" class="w-full max-w-md h-40 flex items-center justify-center bg-white rounded-2xl shadow-xl mb-8 overflow-hidden">
                 <div class="text-center text-gray-500" id="initialMessage">
                     <p class="text-xl">點擊按鈕開始抽獎</p>
                     <p class="text-sm mt-2">祝您好運 ✨</p>
                 </div>
+
                 <div id="prizeResult" class="hidden text-center px-4">
                     <h2 class="text-2xl font-bold text-dark mb-2" id="prizeName"></h2>
                     <p class="text-primary" id="prizeEmoji"></p>
                 </div>
+
                 <div id="noMorePrizes" class="hidden text-center px-4">
                     <h2 class="text-2xl font-bold text-dark mb-2">明年見～</h2>
                     <p class="text-gray-500">所有獎品都抽完啦 😊</p>
                 </div>
             </div>
 
-            <!-- 已抽出獎項列表 -->
             <div class="w-full">
                 <h3 class="text-center text-dark font-bold mb-4 text-lg">已抽出獎項</h3>
-                <div id="drawnPrizesList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    <!-- 已抽出的獎項會動態添加到這裡 -->
-                </div>
+                <div id="drawnPrizesList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
             </div>
         </main>
 
-        <!-- 再來一次按鈕 (抽獎後顯示) -->
         <button id="resetButton" class="hidden bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg text-lg transition-all duration-300">
             <i class="fa fa-refresh mr-2"></i> 再來一次
         </button>
     </div>
 
-    <!-- 頁腳 -->
     <footer class="text-center text-gray-500 py-4">
         <p>✨ 新鮮現炸豬排油獎小遊戲 © 2025 ✨</p>
     </footer>
 
     <script>
-        // 獎品列表
         const prizes = [
             { name: '至尊無敵獎', emoji: '👍' },
             { name: '宇宙霹靂獎', emoji: '✌️' },
@@ -127,15 +123,11 @@
             { name: '自肥獎', emoji: '😌' }
         ];
 
-        // 剩餘獎品
         let remainingPrizes = [...prizes];
-        // 已抽出的獎品
         let drawnPrizes = [];
-        
-        // DOM 元素
+
         const drawButton = document.getElementById('drawButton');
         const resetButton = document.getElementById('resetButton');
-        const prizeDisplay = document.getElementById('prizeDisplay');
         const initialMessage = document.getElementById('initialMessage');
         const prizeResult = document.getElementById('prizeResult');
         const noMorePrizes = document.getElementById('noMorePrizes');
@@ -144,42 +136,27 @@
         const remainingCount = document.getElementById('remainingCount');
         const drawnPrizesList = document.getElementById('drawnPrizesList');
 
-        // 更新剩餘次數顯示
         function updateRemainingCount() {
             remainingCount.textContent = `剩餘抽獎次數：${remainingPrizes.length}`;
         }
 
-        // 抽獎函數
         function drawPrize() {
-            // 檢查是否還有獎品
             if (remainingPrizes.length === 0) {
                 showNoMorePrizes();
                 return;
             }
 
-            // 隨機選擇一個獎品
             const randomIndex = Math.floor(Math.random() * remainingPrizes.length);
             const selectedPrize = remainingPrizes[randomIndex];
-            
-            // 從剩餘獎品中移除
             remainingPrizes.splice(randomIndex, 1);
-            
-            // 添加到已抽出獎品
             drawnPrizes.push(selectedPrize);
-            
-            // 顯示抽獎結果
+
             showPrizeResult(selectedPrize);
-            
-            // 更新剩餘次數
             updateRemainingCount();
-            
-            // 添加到已抽出獎品列表
             addToDrawnPrizesList(selectedPrize);
-            
-            // 顯示再來一次按鈕
+
             resetButton.classList.remove('hidden');
-            
-            // 如果抽完了，禁用抽獎按鈕
+
             if (remainingPrizes.length === 0) {
                 drawButton.disabled = true;
                 drawButton.classList.add('bg-gray-400', 'cursor-not-allowed');
@@ -187,60 +164,48 @@
             }
         }
 
-        // 顯示抽獎結果
         function showPrizeResult(prize) {
             initialMessage.classList.add('hidden');
             prizeResult.classList.remove('hidden');
             noMorePrizes.classList.add('hidden');
-            
+
             prizeName.textContent = prize.name;
             prizeEmoji.textContent = prize.emoji;
-            
-            // 添加動畫效果
+
             prizeResult.classList.add('animate-bounce');
-            setTimeout(() => {
-                prizeResult.classList.remove('animate-bounce');
-            }, 1000);
+            setTimeout(() => prizeResult.classList.remove('animate-bounce'), 1000);
         }
 
-        // 顯示沒有更多獎品
         function showNoMorePrizes() {
             initialMessage.classList.add('hidden');
             prizeResult.classList.add('hidden');
             noMorePrizes.classList.remove('hidden');
+
             drawButton.disabled = true;
-            drawButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-            drawButton.classList.remove('bg-primary', 'hover:bg-primary/90', 'btn-bounce');
         }
 
-        // 添加到已抽出獎品列表
         function addToDrawnPrizesList(prize) {
-            const prizeCard = document.createElement('div');
-            prizeCard.className = 'prize-card bg-white rounded-xl shadow-md p-4 text-center';
-            prizeCard.innerHTML = `
+            const card = document.createElement('div');
+            card.className = 'prize-card bg-white rounded-xl shadow-md p-4 text-center';
+            card.innerHTML = `
                 <p class="text-lg font-bold text-dark">${prize.name}</p>
                 <p class="text-2xl mt-2">${prize.emoji}</p>
             `;
-            drawnPrizesList.appendChild(prizeCard);
+            drawnPrizesList.appendChild(card);
         }
 
-        // 重置抽獎
         function resetDraw() {
-            // 重置顯示
             initialMessage.classList.remove('hidden');
             prizeResult.classList.add('hidden');
             noMorePrizes.classList.add('hidden');
-            
-            // 隱藏再來一次按鈕
             resetButton.classList.add('hidden');
         }
 
-        // 事件監聽
         drawButton.addEventListener('click', drawPrize);
         resetButton.addEventListener('click', resetDraw);
 
-        // 初始化剩餘次數顯示
         updateRemainingCount();
     </script>
+
 </body>
 </html>
