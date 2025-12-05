@@ -62,8 +62,8 @@
     <div class="container mx-auto px-4 py-8 max-w-4xl">
 
         <header class="text-center mb-8">
-            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark text-shadow mb-2">🐽 豬排誠實雜貨店 🐽</h1>
-            <p class="text-gray-600 text-lg">10 個獎項，抽完為止～</p>
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark text-shadow mb-2">🐽 豬排誠實商店 🐽</h1>
+            <p class="text-gray-600 text-lg">總共 8 個獎項，抽完為止～</p>
 
             <div class="mt-4 inline-block bg-white rounded-full px-6 py-2 shadow-md">
                 <span class="text-primary font-bold" id="remainingCount">剩餘抽獎次數：8</span>
@@ -77,17 +77,21 @@
             </button>
 
             <div id="prizeDisplay"
-                class="w-full max-w-md h-40 flex items-center justify-center bg-white rounded-2xl shadow-xl mb-8 overflow-hidden">
+                class="w-full max-w-md min-h-40 flex items-center justify-center bg-white rounded-2xl shadow-xl mb-8 overflow-hidden flex-col">
+
+                <!-- 初始資訊 -->
                 <div class="text-center text-gray-500" id="initialMessage">
                     <p class="text-xl">點擊按鈕開始抽獎</p>
                     <p class="text-sm mt-2">祝您好運 ✨</p>
                 </div>
 
+                <!-- 抽中獎項 -->
                 <div id="prizeResult" class="hidden text-center px-4">
                     <h2 class="text-2xl font-bold text-dark mb-2" id="prizeName"></h2>
                     <p class="text-primary" id="prizeEmoji"></p>
                 </div>
 
+                <!-- ⭐ 全部抽完後顯示 -->
                 <div id="noMorePrizes" class="hidden text-center px-4">
                     <h2 class="text-2xl font-bold text-dark mb-2">明年見～</h2>
                     <p class="text-gray-500">所有獎品都抽完啦 😊</p>
@@ -97,12 +101,12 @@
             <div class="w-full">
                 <h3 class="text-center text-dark font-bold mb-4 text-lg">已抽出獎項</h3>
 
-                <!-- ⭐ 修改為固定 5×2 -->
-                <div id="drawnPrizesList" class="grid grid-cols-5 gap-4"></div>
+                <!-- 固定 4×2 -->
+                <div id="drawnPrizesList" class="grid grid-cols-4 gap-4"></div>
             </div>
         </main>
 
-        <!-- ⭐ 置中 再來一次按鈕 -->
+        <!-- ⭐ 抽完才出現 & 置中 -->
         <div class="w-full flex justify-center mt-4">
             <button id="resetButton"
                 class="hidden bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg text-lg transition-all duration-300">
@@ -119,16 +123,13 @@
     <script>
         // ⭐ 增加自肥獎機率，至尊無敵獎壓軸
         const prizes = [
-            // 壓軸獎（最後一抽）
             { name: '至尊無敵獎', emoji: '👍', isFinal: true },
 
-            // 普通獎項
             { name: '宇宙霹靂獎', emoji: '✌️' },
             { name: '超級好獎', emoji: '👌' },
             { name: '我覺得還不錯獎', emoji: '🖖' },
             { name: '最佳人氣獎', emoji: '🫶' },
 
-            // ⭐ 自肥獎
             { name: '自肥獎', emoji: '😌' },
             { name: '自肥獎', emoji: '😌' },
             { name: '自肥獎', emoji: '😌' },
@@ -158,6 +159,7 @@
         }
 
         function drawPrize() {
+
             // ⭐ 前 7 抽
             if (remainingPrizes.length > 0) {
                 const randomIndex = Math.floor(Math.random() * remainingPrizes.length);
@@ -172,25 +174,31 @@
                 return;
             }
 
-            // ⭐ 最後一抽 → 至尊無敵獎
+            // ⭐ 最後一抽（至尊）
             if (!drawButton.disabled) {
+                drawnPrizes.push(finalPrize);
+
                 showPrizeResult(finalPrize);
                 addToDrawnPrizesList(finalPrize);
-                drawnPrizes.push(finalPrize);
 
                 drawButton.disabled = true;
                 drawButton.classList.add("bg-gray-400", "cursor-not-allowed");
                 drawButton.classList.remove("bg-primary", "hover:bg-primary/90", "btn-bounce");
 
-                resetButton.classList.remove("hidden");
                 remainingCount.textContent = "剩餘抽獎次數：0";
+
+                // ⭐ 顯示「明年見～」
+                prizeResult.classList.add('hidden');
+                noMorePrizes.classList.remove('hidden');
+
+                resetButton.classList.remove("hidden");
             }
         }
 
         function showPrizeResult(prize) {
             initialMessage.classList.add('hidden');
-            prizeResult.classList.remove('hidden');
             noMorePrizes.classList.add('hidden');
+            prizeResult.classList.remove('hidden');
 
             prizeName.textContent = prize.name;
             prizeEmoji.textContent = prize.emoji;
@@ -234,7 +242,4 @@
     </script>
 
 </body>
-
 </html>
-
-
